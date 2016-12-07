@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>huifa-paper-parent</artifactId>
+        <groupId>com.huifa.paper.parent</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>huifa-cnki-core</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>huifa-cnki-core</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <pagehelper.version>4.1.6</pagehelper.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.huifa.paper.parent</groupId>
+            <artifactId>huifa-paper-common</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+            <version>${pagehelper.version}</version>
+        </dependency>
+    </dependencies>
+</project>

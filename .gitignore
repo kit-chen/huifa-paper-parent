@@ -1,4 +1,7 @@
-*.class
+# git ignore
+xcuserdata
+target
+*.iml
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

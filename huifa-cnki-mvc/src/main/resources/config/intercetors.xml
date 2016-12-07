@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+
+    <!-- 通过mvc:resources设置静态资源，这样servlet就会处理这些静态资源，而不通过控制器 -->
+    <mvc:resources location="/resources/" mapping="/resources/**"/>
+    
+    <!-- 设置不过滤内容，比如:css,jquery,img 等资源文件 -->
+    <!-- Interceptors -->
+    <mvc:interceptors>
+
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/**/*"/>-->
+            <!--<bean class="com.huifa.paper.parent.cnki.interceptor.DomainInterceptor"/>-->
+        <!--</mvc:interceptor>-->
+
+        <mvc:interceptor>
+            <mvc:mapping path="/**/*.html"></mvc:mapping>
+            <bean class="com.huifa.paper.parent.cnki.interceptor.LoginInterceptor"></bean>
+        </mvc:interceptor>
+
+        <mvc:interceptor>
+            <mvc:mapping path="/**/*.html"></mvc:mapping>
+            <mvc:exclude-mapping path="/industry/*.html"></mvc:exclude-mapping>
+            <mvc:exclude-mapping path="/main/*.html"></mvc:exclude-mapping>
+            <bean class="com.huifa.paper.parent.cnki.interceptor.UserInterceptor">
+                <property name="allowUrls">
+                    <list>
+                        <!-- noFilter -->
+                        <value>/index</value>
+                        <value>/check</value>
+                        <value>/getCode</value>
+                        <value>/js</value>
+                        <value>/css</value>
+                        <value>/image</value>
+                        <value>/user/sendSmsCode</value>
+                        <value>/register</value>
+                        <value>/login</value>
+                        <value>/qqLogin</value>
+                        <value>/weChatLogin</value>
+                        <value>/weiBoLogin</value>
+                        <value>/aliPayNotifyUrl</value>
+                        <value>/wxNotify</value>
+                        <value>/freeActivity/index</value>
+                        <value>/forgetPwd</value>
+                        <value>/resetPassword</value>
+                        <value>/validateSmsCode</value>
+                        <value>/isUserExist</value>
+                        <value>/normalRecommend</value>
+                        <value>/agentRecommend</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>

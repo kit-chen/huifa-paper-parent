@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huifa.paper.parent.cnki.dao.admin.ISysRoleModuleDao">
+    <resultMap id="BaseResultMap" type="com.huifa.paper.parent.cnki.vo.admin.SysRoleModuleVo">
+        <id column="id" property="id" jdbcType="BIGINT" javaType="long"/>
+        <result column="moduleId" property="moduleId" jdbcType="BIGINT" javaType="long"/>
+        <result column="roleId" property="roleId" jdbcType="BIGINT" javaType="long"/>
+        <result column="moduleName" property="moduleName" jdbcType="VARCHAR" javaType="String"/>
+        <result column="url" property="moduleUrl" jdbcType="VARCHAR" javaType="String"/>
+        <result column="parentId" property="parentId" jdbcType="BIGINT" javaType="long"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        t1.id,t1.moduleId,t1.roleId,t1.moduleUrl
+    </sql>
+
+    <select id="getSysRoleModuleByRoleAndId" parameterType="Map" resultMap="BaseResultMap">
+        SELECT t1.id,t1.moduleId,t1.roleId,t1.status
+        from systemRoleModule t1 where t1.deleteStatus != 0
+        <if test="roleId!=null">
+            and t1.roleId=#{roleId}
+        </if>
+        <if test="moduleId!=null">
+            and t1.moduleId=#{moduleId}
+        </if>
+    </select>
+
+    <select id="getSysModuleByRole" parameterType="Map" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>,t2.moduleName,t2.url,t2.parentId
+        from systemRoleModule t1
+        left join systemModule t2 on t1.moduleId = t2.id and t2.status = 1
+        where t1.deleteStatus != 0 and t2.deleteStatus !=0
+        <if test="roleId!=null">
+            and t1.roleId=#{roleId}
+        </if>
+    </select>
+
+
+    <select id="getSysModuleCountByRole" parameterType="Map" resultType="INTEGER">
+        SELECT count(1) totalNum  from systemRoleModule t1
+        left join systemModule t2
+        <if test="roleId!=null">
+            and t1.roleId=#{roleId}
+        </if>
+    </select>
+
+    <insert id="createSysRoleModule" parameterType="com.huifa.paper.parent.cnki.entity.admin.SysRoleModule" useGeneratedKeys="true" keyProperty="id">
+        insert into systemRoleModule(moduleId,roleId,status,deleteStatus)
+        values (#{moduleId},#{roleId},#{status},#{deleteStatus})
+    </insert>
+
+    <update id="updateSysRoleModule" parameterType="Map">
+        update systemRoleModule
+        <set>
+            <if test="moduleId!=null">
+                moduleId=#{moduleId},
+            </if>
+            <if test="roleId!=null">
+                roleId=#{roleId},
+            </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <insert id="batchCreateSysRoleModule" parameterType="Map" >
+        insert into systemRoleModule(moduleId,roleId,deleteStatus)
+        values
+        <foreach collection="modules"  index="index" item="module" separator=",">
+            (#{module},#{roleId},1)
+        </foreach>
+    </insert>
+
+    <delete id="delModuleByRole" parameterType="Long">
+        delete from systemRoleModule where roleId = #{roleId}
+    </delete>
+</mapper>
