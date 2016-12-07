@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huifa.paper.parent.cnki.dao.web.IWebUserDao">
+    <resultMap id="BaseResultMap" type="com.huifa.paper.parent.cnki.vo.web.WebUserVo">
+        <id column="id" property="id" jdbcType="BIGINT" javaType="long"/>
+        <result column="userName" property="userName" jdbcType="VARCHAR" javaType="String"/>
+        <result column="password" property="password" jdbcType="VARCHAR" javaType="String"/>
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP" javaType="java.sql.Timestamp"/>
+        <result column="account" property="account" jdbcType="DECIMAL" javaType="java.math.BigDecimal"/>
+        <result column="recharge" property="recharge" jdbcType="DECIMAL" javaType="java.math.BigDecimal"/>
+        <result column="loginType" property="loginType" jdbcType="INTEGER" javaType="Integer"/>
+        <result column="openId" property="openId" jdbcType="VARCHAR" javaType="String"/>
+        <result column="status" property="status" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        t1.id,t1.userName,t1.password,t1.account,t1.createTime,t1.recharge,t1.loginType,t1.openId,t1.status
+    </sql>
+
+    <select id="getById" parameterType="Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> from webUser t1 where t1.deleteStatus != 0 and t1.id=#{id}
+    </select>
+
+    <select id="getWebUserByMap" parameterType="Map" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> from webUser t1 where t1.deleteStatus != 0
+        <if test="id!=null">
+            and t1.id=#{id}
+        </if>
+        <if test="userName!=null">
+            and t1.userName=#{userName}
+        </if>
+        <if test="startTime!=null">
+            <![CDATA[and t1.createTime>=#{startTime}]]>
+        </if>
+        <if test="endTime!=null">
+            <![CDATA[and t1.createTime<=#{endTime}]]>
+        </if>
+        order by t1.id desc
+        <if test="fromNum!=null">
+            limit #{fromNum},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getWebUserCountByMap" parameterType="Map" resultType="INTEGER">
+        SELECT count(1) totalNum from webUser t1 where t1.deleteStatus != 0
+        <if test="id!=null">
+            and t1.id=#{id}
+        </if>
+        <if test="userName!=null">
+            and t1.userName=#{userName}
+        </if>
+        <if test="startTime!=null">
+            <![CDATA[and t1.createTime>=#{startTime}]]>
+        </if>
+        <if test="endTime!=null">
+            <![CDATA[and t1.createTime<=#{endTime}]]>
+        </if>
+    </select>
+
+    <!-- 创建新用户 -->
+    <insert id="createWebUser" parameterType="com.huifa.paper.parent.cnki.entity.web.WebUser" useGeneratedKeys="true" keyProperty="id">
+        insert into webUser(userName,password,account,createTime,recharge,loginType,openId,status)
+        values (#{userName},#{password},#{account},#{createTime},#{recharge},#{loginType},#{openId},#{status})
+    </insert>
+
+    <!-- 根据第三方登录openId查找用户 -->
+    <select id="getByOpenId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> from webUser t1 where t1.deleteStatus != 0 and t1.openId=#{openId}
+    </select>
+
+    <update id="modifyPassword" parameterType="java.util.Map">
+        UPDATE webUser SET password=#{newPassword} WHERE id=#{userId}
+    </update>
+
+    <update id="updateWebUser" parameterType="Map">
+        update webUser
+        <set>
+            <if test="userName!=null">
+                userName=#{userName},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="logicDelWebUserById" parameterType="Long">
+        update webUser set deleteStatus = 0 where id=#{id}
+    </update>
+
+    <delete id="deleteDelWebUserById" parameterType="Long">
+        delete from webUser where id = #{id}
+    </delete>
+
+    <!-- 更新账户信息 -->
+    <update id="updateBalance" parameterType="java.util.Map">
+        UPDATE webUser
+        <set>
+            <if test="account!=null">
+                account=#{account},
+            </if>
+            <if test="costCoin!=null">
+                costCoin=#{costCoin},
+            </if>
+            <if test="recharge!=null">
+                recharge=#{recharge},
+            </if>
+            <if test="openId!=null">
+                openId=#{openId},
+            </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新用户预留标识位 -->
+    <update id="updateStatus" parameterType="java.util.Map">
+        UPDATE webUser SET status=#{status} WHERE id=#{id}
+    </update>
+</mapper>

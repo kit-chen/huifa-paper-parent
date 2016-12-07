@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huifa.paper.parent.cnki.dao.admin.ISysRoleDao">
+    <resultMap id="BaseResultMap" type="com.huifa.paper.parent.cnki.vo.admin.SysRoleVo">
+        <id column="id" property="id" jdbcType="BIGINT" javaType="long"/>
+        <result column="name" property="name" jdbcType="VARCHAR" javaType="String"/>
+        <result column="status" property="status" jdbcType="INTEGER" javaType="Integer"/>
+        <result column="roleCount" property="roleCount" jdbcType="INTEGER" javaType="Integer"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+       t1.id,t1.name,t1.status
+    </sql>
+
+    <select id="getById" parameterType="Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> from systemRole t1 where t1.deleteStatus != 0 and t1.id=#{id}
+    </select>
+
+    <select id="getAllRoleByMap" parameterType="Map" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> from systemRole t1
+        where t1.deleteStatus != 0
+        <if test="id!=null">
+            and t1.id=#{id}
+        </if>
+        <if test="name!=null">
+            and t1.`name`=#{name}
+        </if>
+        <if test="status!=null">
+            and t1.status =#{status}
+        </if>
+        group by t1.id
+    </select>
+
+    <select id="getSysRoleByMap" parameterType="Map" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>,count(t2.id) as 'roleCount' from systemRole t1
+        left join systemRoleModule t2 on t1.id = t2.roleId
+        where t1.deleteStatus != 0
+        <if test="id!=null">
+            and t1.id=#{id}
+        </if>
+        <if test="name!=null">
+            and t1.`name`=#{name}
+        </if>
+        <if test="status!=null">
+            and t1.status =#{status}
+        </if>
+        group by t1.id
+    </select>
+
+    <select id="getSysRoleCountByMap" parameterType="Map" resultType="INTEGER">
+        SELECT count(1) totalNum  from systemRole t1 where t1.deleteStatus != 0
+        <if test="id!=null">
+            and t1.id=#{id}
+        </if>
+        <if test="name!=null">
+            and t1.`name`=#{name}
+        </if>
+        <if test="status!=null">
+            and t1.status =#{status}
+        </if>
+    </select>
+
+    <insert id="createSysRole" parameterType="com.huifa.paper.parent.cnki.entity.admin.SysRole" useGeneratedKeys="true" keyProperty="id">
+        insert into systemRole(`name`,status,deleteStatus)
+        values (#{name},#{status},#{deleteStatus})
+    </insert>
+
+
+    <update id="updateSysRole" parameterType="Map">
+        update systemRole
+        <set>
+            <if test="name!=null">
+                `name`=#{name},
+            </if>
+            <if test="status!=null">
+                `status`=#{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="logicDelSysRoleById" parameterType="Long">
+        update systemRole set deleteStatus = 0 where id=#{id}
+    </update>
+
+    <delete id="deleteSysRoleById" parameterType="Long">
+        delete from systemRole where id = #{id}
+    </delete>
+</mapper>
